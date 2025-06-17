@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BMC Card Generator</title>
-  <link rel="icon" type="image/png" href="./Template/logo.png" />
+  <link rel="icon" type="image/png" href="/Template/logo.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6366f1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Pacifico&family=Concert+One&family=Alice&family=Roboto&family=Lobster&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -35,6 +37,7 @@
       width: 64px;
       height: auto;
       margin-bottom: 12px;
+      border-radius: 16px;
     }
     h1 {
       font-size: 1.8rem;
@@ -123,10 +126,12 @@
       border-radius: 10px;
       width: 100%;
       cursor: pointer;
+      margin-top: 10px;
     }
     button[type="submit"]:hover {
       background: linear-gradient(to right, #4f46e5, #3730a3);
     }
+
     .popup {
       position: fixed;
       inset: 0;
@@ -153,21 +158,25 @@
       padding: 10px 20px;
       border: none;
       border-radius: 8px;
-      background: #6366f1;
-      color: white;
+      background: #transparent;
+      color: #black;
       font-weight: 600;
       cursor: pointer;
     }
-    .close-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      font-size: 22px;
-      background: transparent;
-      border: none;
-      color: #374151;
-      cursor: pointer;
+    #shareStatus {
+      margin-top: 10px;
+      background-color: #22c55e;
     }
+    .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 22px;
+  background: transparent;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+}
     @keyframes fadeIn {
       from {opacity: 0; transform: translateY(-10px);}
       to {opacity: 1; transform: translateY(0);}
@@ -177,7 +186,7 @@
 <body>
   <div class="wrapper">
     <div class="card">
-      <img src="./Template/logo.png" alt="Logo" />
+      <img src="/Template/logo.png" alt="Logo" />
       <h1>BMC Card Generator</h1>
       <form id="templateForm">
         <input type="text" id="userName" placeholder="Enter the name" maxlength="30" required />
@@ -187,7 +196,7 @@
         </div>
         <div class="template-options">
           <label class="template-card" id="card-birthday">
-            <input type="radio" name="template" value="birthday" required />🎂 Birthday
+            <input type="radio" name="template" value="birthday" />🎂 Birthday
           </label>
           <label class="template-card" id="card-wedding">
             <input type="radio" name="template" value="wedding" />💍 Wedding
@@ -198,11 +207,11 @@
         </div>
         <div class="advanced-options" id="advancedOptions">
           <select id="fontSelector">
-            <option value="'Alice', serif">Alice</option>
-            <option value="'Concert One', cursive">Concert One</option>
-            <option value="'Pacifico', cursive">Pacifico</option>
-            <option value="'Roboto', sans-serif">Roboto</option>
-            <option value="'Lobster', cursive">Lobster</option>
+            <option value="'Alice', serif" style="font-family:'Alice', serif;">Alice</option>
+            <option value="'Concert One', cursive" style="font-family:'Concert One', cursive;">Concert One</option>
+            <option value="'Pacifico', cursive" style="font-family:'Pacifico', cursive;">Pacifico</option>
+            <option value="'Roboto', sans-serif" style="font-family:'Roboto', sans-serif;">Roboto</option>
+            <option value="'Lobster', cursive" style="font-family:'Lobster', cursive;">Lobster</option>
           </select>
           <div class="font-size-control">
             <input type="range" id="fontSizeRange" min="50" max="200" value="100">
@@ -215,11 +224,22 @@
     </div>
   </div>
 
+  <!-- Image Preview Popup -->
   <div class="popup" id="imagePopup">
     <div class="popup-content">
       <button class="close-btn" id="closePopup">&times;</button>
       <img id="finalPreview" src="" alt="Generated Card" />
       <button id="downloadFinal">Download PNG</button>
+      <button id="shareStatus">Share as Status</button>
+    </div>
+  </div>
+
+  <!-- Install App Popup Modal -->
+  <div class="popup" id="installPopup">
+    <div class="popup-content">
+      <button class="close-btn" id="closeInstallPopup">&times;</button>
+      <p>Install the BMC Card Generator App?</p>
+      <button id="installNowBtn">Install</button>
     </div>
   </div>
 
@@ -242,26 +262,58 @@
     const husbandNameInput = document.getElementById('husbandName');
     const wifeNameInput = document.getElementById('wifeName');
     const extraFields = document.getElementById('extraFields');
-
     const cardBirthday = document.getElementById('card-birthday');
     const cardWedding = document.getElementById('card-wedding');
+    const shareStatus = document.getElementById('shareStatus');
+
+    const installPopup = document.getElementById('installPopup');
+    const closeInstallPopup = document.getElementById('closeInstallPopup');
+    const installNowBtn = document.getElementById('installNowBtn');
 
     let selectedFont = fontSelector.value;
     let fontSizePercent = 100;
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        installPopup.style.display = 'flex';
+      }
+    });
+
+    installNowBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choice => {
+          if (choice.outcome === 'accepted') {
+            installPopup.style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      }
+    });
+
+    closeInstallPopup.addEventListener('click', () => {
+      installPopup.style.display = 'none';
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('✅ Service Worker Registered'))
+          .catch(err => console.error('❌ SW registration failed:', err));
+      });
+    }
 
     document.querySelectorAll('input[name="template"]').forEach(radio => {
       radio.addEventListener('change', (e) => {
         const value = e.target.value;
         cardBirthday.classList.toggle('selected', value === 'birthday');
         cardWedding.classList.toggle('selected', value === 'wedding');
-
-        if (value === 'wedding') {
-          extraFields.style.display = 'block';
-          userNameInput.style.display = 'none';
-        } else {
-          extraFields.style.display = 'none';
-          userNameInput.style.display = 'block';
-        }
+        extraFields.style.display = value === 'wedding' ? 'block' : 'none';
+        userNameInput.style.display = value === 'birthday' ? 'block' : 'none';
       });
     });
 
@@ -269,31 +321,25 @@
       advancedOptions.style.display = advancedOptions.style.display === 'block' ? 'none' : 'block';
     };
 
-    fontSelector.onchange = () => {
-      selectedFont = fontSelector.value;
-    };
-
+    fontSelector.onchange = () => selectedFont = fontSelector.value;
     fontSizeRange.oninput = () => {
       fontSizePercent = parseInt(fontSizeRange.value);
       fontSizeLabel.textContent = fontSizePercent + '%';
     };
-
     resetFontSize.onclick = () => {
       fontSizePercent = 100;
       fontSizeRange.value = 100;
       fontSizeLabel.textContent = '100%';
     };
-
     closePopup.onclick = () => imagePopup.style.display = 'none';
 
     form.onsubmit = (e) => {
       e.preventDefault();
-      const template = form.querySelector('input[name="template"]:checked')?.value;
-      if (!template) return alert('Select a template.');
+      const template = form.querySelector('input[name="template"]:checked').value;
+      const name = template === 'birthday' ? userNameInput.value.trim() : `${husbandNameInput.value.trim()} & ${wifeNameInput.value.trim()}`;
 
       const img = new Image();
       img.src = `Template/${template === 'birthday' ? 'Birthday_Template.png' : 'Wedding_Template.png'}`;
-
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
@@ -310,7 +356,7 @@
         ctx.font = `bold ${finalSize}px ${selectedFont}`;
 
         if (template === 'birthday') {
-          ctx.fillText(userNameInput.value.trim(), 400, 851.6);
+          ctx.fillText(name, 400, 851.6);
         } else {
           ctx.fillText(husbandNameInput.value.trim(), 353.9, 765.1);
           ctx.fillText(wifeNameInput.value.trim(), 353.9, 898.3);
@@ -320,16 +366,23 @@
         imagePopup.style.display = 'flex';
 
         downloadFinal.onclick = () => {
-          const filename = `card_${Date.now()}.png`;
           const link = document.createElement('a');
           link.href = finalPreview.src;
-          link.download = filename;
+          link.download = `card_${Date.now()}.png`;
           link.click();
           imagePopup.style.display = 'none';
         };
-      };
 
-      img.onerror = () => alert('Failed to load template.');
+        shareStatus.onclick = async () => {
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          const file = new File([blob], 'card.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'BMC Card', text: `🎉 Happy Birthday ${name}` });
+          } else {
+            alert('Sharing not supported on this device.');
+          }
+        };
+      };
     };
   </script>
 </body>
