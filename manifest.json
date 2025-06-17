@@ -1,0 +1,21 @@
+{
+  "name": "BMC Card Generator",
+  "short_name": "BMC Cards",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "description": "Create and share custom birthday/wedding cards!",
+  "icons": [
+    {
+      "src": "/Template/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Template/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
