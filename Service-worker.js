@@ -1,12 +1,12 @@
 const CACHE_NAME = 'bmc-cache-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/Template/logo.png',
-  '/Template/Birthday_Template.png',
-  '/Template/Wedding_Template.png',
-  '/manifest.json',
-  '/service-worker.js',
+  './index.html',
+  './Template/logo.png',
+  './Template/Birthday_Template.png',
+  './Template/Wedding_Template.png',
+  './manifest.json',
+  './service-worker.js',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Pacifico&family=Concert+One&family=Alice&family=Roboto&family=Lobster&display=swap'
 ];
 
