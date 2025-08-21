@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMC Card Generator</title>
+  <link rel="icon" type="image/png" href="./Template/logo.png" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#6366f1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Pacifico&family=Concert+One&family=Alice&family=Roboto&family=Lobster&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #f3f4f6, #e0e7ff);
+      color: #111827;
+    }
+
+    .top-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #f3f4f6;
+      color: #4f46e5;
+      border: 2px solid #6366f1;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      z-index: 1001;
+      transition: all 0.25s ease-in-out;
+    }
+    .top-button:hover {
+      background: #e0e7ff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 36px;
+      text-align: center;
+    }
+
+    .card img {
+      width: 64px;
+      height: auto;
+      margin-bottom: 12px;
+      border-radius: 16px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-family: 'Concert One', cursive;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1.5px solid #d1d5db;
+      margin-bottom: 16px;
+    }
+
+    .template-options {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .template-card {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      background: #f3f4f6;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      font-weight: 600;
+      user-select: none;
+      position: relative;
+    }
+
+    .template-card:hover {
+      background: #eef2ff;
+      border-color: #6366f1;
+    }
+
+    .template-card input {
+      display: none;
+    }
+
+    .template-card.selected {
+      background: #e0e7ff;
+      border-color: #6366f1;
+    }
+
+    .advanced-toggle {
+      text-align: right;
+      margin: 10px 0;
+    }
+
+    #toggleAdvanced {
+      font-size: 14px;
+      color: #6366f1;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .advanced-options {
+      display: none;
+      margin-bottom: 24px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .font-size-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .font-size-control input[type="range"] {
+      flex: 1;
+    }
+
+    .reset-btn {
+      padding: 6px 10px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      background: linear-gradient(to right, #6366f1, #4338ca);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(to right, #4f46e5, #3730a3);
+    }
+
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      text-align: center;
+      position: relative;
+      max-width: 90%;
+    }
+
+    .popup-content img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .popup-content button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: black;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #shareStatus {
+      margin-top: 10px;
+      background-color: #22c55e;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 22px;
+      background: transparent;
+      border: none;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <!-- ✅ Top Right "Not Working?" Button -->
+  <a href="./oldindex.html" class="top-button">Not Working?</a>
+
+  <div class="wrapper">
+    <div class="card">
+      <img src="./Template/logo.png" alt="Logo" />
+      <h1>BMC Card Generator</h1>
+      <form id="templateForm">
+        <input type="text" id="userName" placeholder="Enter the name" maxlength="30" required />
+        <div id="extraFields" style="display:none">
+          <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
+          <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
+        </div>
+        <div class="template-options">
+          <label class="template-card selected" id="card-birthday">
+            <input type="radio" name="template" value="birthday" checked />🎂 Birthday
+          </label>
+          <label class="template-card" id="card-wedding">
+            <input type="radio" name="template" value="wedding" />💍 Wedding
+          </label>
+        </div>
+        <div class="advanced-toggle">
+          <button type="button" id="toggleAdvanced">Advanced Options</button>
+        </div>
+        <div class="advanced-options" id="advancedOptions">
+          <select id="fontSelector">
+            <option value="'Alice', serif">Alice</option>
+            <option value="'Concert One', cursive">Concert One</option>
+            <option value="'Pacifico', cursive">Pacifico</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+            <option value="'Lobster', cursive">Lobster</option>
+          </select>
+          <div class="font-size-control">
+            <input type="range" id="fontSizeRange" min="50" max="200" value="100">
+            <span id="fontSizeLabel">100%</span>
+            <button type="button" id="resetFontSize" class="reset-btn">Default</button>
+          </div>
+        </div>
+        <button type="submit">Generate Card</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="popup" id="imagePopup">
+    <div class="popup-content">
+      <button class="close-btn" id="closePopup">&times;</button>
+      <img id="finalPreview" src="" alt="Generated Card" />
+      <button id="downloadFinal">Download PNG</button>
+      <button id="shareStatus">Share as Status</button>
+    </div>
+  </div>
+
+  <div class="popup" id="installPopup">
+    <div class="popup-content">
+      <button class="close-btn" id="closeInstallPopup">&times;</button>
+      <p>Install the BMC Card Generator App?</p>
+      <button id="installNowBtn">Install</button>
+    </div>
+  </div>
+
+  <canvas id="canvas" style="display:none"></canvas>
+  <script>
+    const form = document.getElementById('templateForm');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const imagePopup = document.getElementById('imagePopup');
+    const finalPreview = document.getElementById('finalPreview');
+    const downloadFinal = document.getElementById('downloadFinal');
+    const closePopup = document.getElementById('closePopup');
+    const fontSelector = document.getElementById('fontSelector');
+    const fontSizeRange = document.getElementById('fontSizeRange');
+    const fontSizeLabel = document.getElementById('fontSizeLabel');
+    const resetFontSize = document.getElementById('resetFontSize');
+    const advancedBtn = document.getElementById('toggleAdvanced');
+    const advancedOptions = document.getElementById('advancedOptions');
+    const userNameInput = document.getElementById('userName');
+    const husbandNameInput = document.getElementById('husbandName');
+    const wifeNameInput = document.getElementById('wifeName');
+    const extraFields = document.getElementById('extraFields');
+    const cardBirthday = document.getElementById('card-birthday');
+    const cardWedding = document.getElementById('card-wedding');
+    const shareStatus = document.getElementById('shareStatus');
+
+    const installPopup = document.getElementById('installPopup');
+    const closeInstallPopup = document.getElementById('closeInstallPopup');
+    const installNowBtn = document.getElementById('installNowBtn');
+
+    let selectedFont = fontSelector.value;
+    let fontSizePercent = 100;
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        installPopup.style.display = 'flex';
+      }
+    });
+
+    installNowBtn.onclick = () => {
+      deferredPrompt?.prompt();
+      deferredPrompt?.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') installPopup.style.display = 'none';
+        deferredPrompt = null;
+      });
+    };
+    closeInstallPopup.onclick = () => installPopup.style.display = 'none';
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker Registered'))
+        .catch(err => console.error('❌ SW registration failed:', err));
+    }
+
+    document.querySelectorAll('input[name="template"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const value = e.target.value;
+        cardBirthday.classList.toggle('selected', value === 'birthday');
+        cardWedding.classList.toggle('selected', value === 'wedding');
+        extraFields.style.display = value === 'wedding' ? 'block' : 'none';
+        userNameInput.style.display = value === 'birthday' ? 'block' : 'none';
+      });
+    });
+
+    advancedBtn.onclick = () => {
+      advancedOptions.style.display = advancedOptions.style.display === 'block' ? 'none' : 'block';
+    };
+
+    fontSelector.onchange = () => selectedFont = fontSelector.value;
+    fontSizeRange.oninput = () => {
+      fontSizePercent = parseInt(fontSizeRange.value);
+      fontSizeLabel.textContent = fontSizePercent + '%';
+    };
+    resetFontSize.onclick = () => {
+      fontSizePercent = 100;
+      fontSizeRange.value = 100;
+      fontSizeLabel.textContent = '100%';
+    };
+    closePopup.onclick = () => imagePopup.style.display = 'none';
+
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      let template = form.querySelector('input[name="template"]:checked');
+      if (!template) {
+        document.querySelector('#card-birthday input').checked = true;
+        template = form.querySelector('input[name="template"]:checked');
+      }
+
+      const selectedTemplate = template.value;
+      const name = selectedTemplate === 'birthday'
+        ? userNameInput.value.trim()
+        : `${husbandNameInput.value.trim()} & ${wifeNameInput.value.trim()}`;
+
+      const img = new Image();
+      img.src = `Template/${selectedTemplate === 'birthday' ? 'Birthday_Template.png' : 'Wedding_Template.png'}`;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+
+        const finalSize = 50 * (fontSizePercent / 100);
+        ctx.fillStyle = 'black';
+        ctx.textBaseline = 'top';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 4;
+        ctx.font = `bold ${finalSize}px ${selectedFont}`;
+
+        if (selectedTemplate === 'birthday') {
+          ctx.fillText(name, 400, 851.6);
+        } else {
+          ctx.fillText(husbandNameInput.value.trim(), 353.9, 765.1);
+          ctx.fillText(wifeNameInput.value.trim(), 353.9, 898.3);
+        }
+
+        finalPreview.src = canvas.toDataURL('image/png');
+        imagePopup.style.display = 'flex';
+
+        downloadFinal.onclick = () => {
+          const link = document.createElement('a');
+          link.href = finalPreview.src;
+          link.download = `card_${Date.now()}.png`;
+          link.click();
+          imagePopup.style.display = 'none';
+        };
+
+        shareStatus.onclick = async () => {
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          const file = new File([blob], 'card.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'BMC Card', text: `🎉 Happy Birthday ${name}` });
+          } else {
+            alert('Sharing not supported on this device.');
+          }
+        };
+      };
+    };
+  </script>
+</body>
+  </html>
