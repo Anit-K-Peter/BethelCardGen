@@ -7,6 +7,7 @@ const urlsToCache = [
   './Template/Wedding_Template.png',
   './manifest.json',
   './service-worker.js',
+  'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Pacifico&family=Concert+One&family=Alice&family=Roboto&family=Lobster&display=swap'
 ];
 

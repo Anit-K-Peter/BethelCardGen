@@ -6,14 +6,14 @@
   <title>Bethel Malayalam Church Bday & Wedding Card Gen Page</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: 'Alice', serif;
+      font-family: 'Lora', serif;
       background: #f0f2f5;
       display: flex;
       justify-content: center;
@@ -46,33 +46,6 @@
     input[type="text"]:focus {
       outline: none;
       border-color: #3f51b5;
-    }
-    .templates {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-    label {
-      cursor: pointer;
-      user-select: none;
-      font-size: 16px;
-      color: #444;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    input[type="radio"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-    }
-    .extra-names {
-      display: none;
-      flex-direction: column;
-    }
-    .hidden {
-      display: none;
     }
     button {
       padding: 14px 0;
@@ -130,22 +103,6 @@
           pattern="[A-Za-z\s'-]{1,30}"
           title="Please enter letters, spaces, apostrophes or dashes only"
         />
-        <div class="templates">
-          <label>
-            <input type="radio" name="template" value="birthday" required />
-            Birthday Template
-          </label>
-          <label>
-            <input type="radio" name="template" value="wedding" />
-            Wedding Template
-          </label>
-        </div>
-
-        <div class="extra-names" id="extraFields">
-          <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
-          <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
-        </div>
-
         <button type="submit" id="submitBtn">Download</button>
       </form>
     </section>
@@ -165,36 +122,12 @@
       const userNameInput = document.getElementById('userName');
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
-      const extraFields = document.getElementById('extraFields');
-      const husbandNameInput = document.getElementById('husbandName');
-      const wifeNameInput = document.getElementById('wifeName');
 
       const templates = {
         birthday: {
-          url: '/Template/Birthday_Template.png',
-        },
-        wedding: {
-          url: '/Template/Wedding_Template.png',
+          url: './Template/senior_citizen.png',
         }
       };
-
-      document.querySelectorAll('input[name="template"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-          if (radio.value === 'wedding') {
-            extraFields.style.display = 'flex';
-            userNameInput.classList.add('hidden');
-            userNameInput.required = false;
-            husbandNameInput.required = true;
-            wifeNameInput.required = true;
-          } else {
-            extraFields.style.display = 'none';
-            userNameInput.classList.remove('hidden');
-            userNameInput.required = true;
-            husbandNameInput.required = false;
-            wifeNameInput.required = false;
-          }
-        });
-      });
 
       function sanitizeFileName(s) {
         return s.trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase();
@@ -207,19 +140,15 @@
         ctx.drawImage(image, 0, 0);
 
         ctx.fillStyle = 'black';
-        ctx.font = 'bold 50px Alice';
+        ctx.font = 'bold 28.8px Lora';  // Doubled the font size from 35.4px to 70.8px
         ctx.textBaseline = 'top';
         ctx.shadowColor = 'rgba(0,0,0,0.4)';
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 4;
+        ctx.shadowBlur = 7;
 
-        if (options.template === 'birthday') {
-          ctx.fillText(options.name, 400, 851.6);
-        } else if (options.template === 'wedding') {
-          ctx.fillText(options.husband, 353.9, 765.1);
-          ctx.fillText(options.wife, 353.9, 898.3);
-        }
+        // Updated text position with new X and Y coordinates
+        ctx.fillText(options.name, 74.1, 424.8);
       }
 
       function downloadImage(dataURL, filename) {
@@ -234,31 +163,10 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const selectedTemplateInput = form.querySelector('input[name="template"]:checked');
-        if (!selectedTemplateInput) {
-          alert('Please select a template.');
+        const userName = userNameInput.value.trim();
+        if (!userName) {
+          alert('Please enter your name.');
           return;
-        }
-
-        const selectedTemplate = selectedTemplateInput.value;
-        let imageTextOptions = { template: selectedTemplate };
-
-        if (selectedTemplate === 'birthday') {
-          const userName = userNameInput.value.trim();
-          if (!userName) {
-            alert('Please enter your name.');
-            return;
-          }
-          imageTextOptions.name = userName;
-        } else {
-          const husband = husbandNameInput.value.trim();
-          const wife = wifeNameInput.value.trim();
-          if (!husband || !wife) {
-            alert('Please enter both names.');
-            return;
-          }
-          imageTextOptions.husband = husband;
-          imageTextOptions.wife = wife;
         }
 
         submitBtn.disabled = true;
@@ -268,12 +176,10 @@
         img.onload = function () {
           setTimeout(() => {
             try {
-              drawTextOnImage(img, imageTextOptions);
-              const baseName = selectedTemplate === 'birthday'
-                ? sanitizeFileName(imageTextOptions.name)
-                : sanitizeFileName(imageTextOptions.husband + '_' + imageTextOptions.wife);
+              drawTextOnImage(img, { name: userName });
+              const baseName = sanitizeFileName(userName);
               const dateStr = new Date().toISOString().split('T')[0];
-              const filename = `${selectedTemplate}_${baseName}_${dateStr}.png`;
+              const filename = `Senior_Citizen_${baseName}_${dateStr}.png`;
               const dataURL = canvas.toDataURL('image/png');
               downloadImage(dataURL, filename);
               alert('Your personalized template is ready for download!');
@@ -287,12 +193,12 @@
         };
 
         img.onerror = function () {
-          alert('Failed to load the selected template image.');
+          alert('Failed to load the template image.');
           loadingOverlay.style.display = 'none';
           submitBtn.disabled = false;
         };
 
-        img.src = templates[selectedTemplate].url;
+        img.src = templates.birthday.url;
       });
     })();
   </script>
