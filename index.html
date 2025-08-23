@@ -145,8 +145,14 @@
           <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
           <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
         </div>
+        <button type="button" id="submitBtn" style="margin-bottom:16px;">Download</button>
+        <button type="button" id="citizenBtn">Citizen Card</button>
+        <script>
+          document.getElementById('citizenBtn').onclick = function() {
+            window.location.href = 'citizen.html';
+          };
+        </script>
 
-        <button type="submit" id="submitBtn">Download</button>
       </form>
     </section>
 

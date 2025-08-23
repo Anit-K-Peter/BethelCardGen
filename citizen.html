@@ -91,7 +91,7 @@
 <body>
   <main>
     <section class="container" aria-label="Personalize Image Templates">
-      <h1>BMC Card Template By Anit</h1>
+      <h1>BMC Citizen Card Template By Anit</h1>
       <form id="templateForm">
         <input
           type="text"
@@ -104,6 +104,12 @@
           title="Please enter letters, spaces, apostrophes or dashes only"
         />
         <button type="submit" id="submitBtn">Download</button>
+        <button type="button" id="backBtn" style="margin-top:12px;">Back</button>
+        <script>
+          document.getElementById('backBtn').onclick = function() {
+            window.location.href = 'index.html';
+          };
+        </script>
       </form>
     </section>
 
