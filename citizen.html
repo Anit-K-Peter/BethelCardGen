@@ -103,6 +103,11 @@
           pattern="[A-Za-z\s'-]{1,30}"
           title="Please enter letters, spaces, apostrophes or dashes only"
         />
+        <!-- New dropdown for orientation -->
+        <select id="orientation" name="orientation" style="width:100%;padding:12px 14px;font-size:16px;border-radius:8px;border:1.5px solid #ccc;margin-bottom:20px;">
+          <option value="horizontal">Horizontal</option>
+          <option value="landscape">Landscape</option>
+        </select>
         <button type="submit" id="submitBtn">Download</button>
         <button type="button" id="backBtn" style="margin-top:12px;">Back</button>
         <script>
@@ -129,12 +134,22 @@
       const loadingOverlay = document.getElementById('loadingOverlay');
       const submitBtn = document.getElementById('submitBtn');
       const userNameInput = document.getElementById('userName');
+      const orientationInput = document.getElementById('orientation'); // new
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
 
       const templates = {
-        birthday: {
+        horizontal: {
           url: './Template/senior_citizen.png',
+          textX: 287.9,
+          textY: 1414.9,
+          font: 'bold 100.8px Alice'
+        },
+        landscape: {
+          url: './Template/senior_citizen_landscape.png',
+          textX: 504.2, // Adjust as needed for landscape template
+          textY: 839.3, // Adjust as needed for landscape template
+          font: 'bold 60.8px Alice'
         }
       };
 
@@ -149,15 +164,14 @@
         ctx.drawImage(image, 0, 0);
 
         ctx.fillStyle = 'black';
-        ctx.font = 'bold 100.8px Alice';  // Updated to use Alice font
+        ctx.font = options.font;
         ctx.textBaseline = 'top';
         ctx.shadowColor = 'rgba(0,0,0,0.4)';
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         ctx.shadowBlur = 7;
 
-        // Updated text position with new X and Y coordinates
-        ctx.fillText(options.name, 287.9, 1414.9);
+        ctx.fillText(options.name, options.textX, options.textY);
       }
 
       function downloadImage(dataURL, filename) {
@@ -178,6 +192,9 @@
           return;
         }
 
+        const orientation = orientationInput.value || 'horizontal';
+        const template = templates[orientation];
+
         submitBtn.disabled = true;
         loadingOverlay.style.display = 'flex';
 
@@ -185,10 +202,15 @@
         img.onload = function () {
           setTimeout(() => {
             try {
-              drawTextOnImage(img, { name: userName });
+              drawTextOnImage(img, { 
+                name: userName, 
+                textX: template.textX, 
+                textY: template.textY, 
+                font: template.font 
+              });
               const baseName = sanitizeFileName(userName);
               const dateStr = new Date().toISOString().split('T')[0];
-              const filename = `Senior_Citizen_${baseName}_${dateStr}.png`;
+              const filename = `Senior_Citizen_${orientation}_${baseName}_${dateStr}.png`;
               const dataURL = canvas.toDataURL('image/png');
               downloadImage(dataURL, filename);
               alert('Your personalized template is ready for download!');
@@ -207,7 +229,7 @@
           submitBtn.disabled = false;
         };
 
-        img.src = templates.birthday.url;
+        img.src = template.url;
       });
     })();
   </script>
