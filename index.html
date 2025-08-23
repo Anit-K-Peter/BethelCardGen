@@ -113,6 +113,24 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    .corner-stats {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: rgba(255,255,255,0.93);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      font-size: 14px;
+      color: #333;
+      padding: 10px 18px;
+      z-index: 10000;
+      text-align: right;
+      font-family: 'Alice', serif;
+      line-height: 1.5;
+      opacity: 0.92;
+      pointer-events: none;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -145,14 +163,8 @@
           <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
           <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
         </div>
-        <button type="button" id="submitBtn" style="margin-bottom:16px;">Download</button>
-        <button type="button" id="citizenBtn">Citizen Card</button>
-        <script>
-          document.getElementById('citizenBtn').onclick = function() {
-            window.location.href = 'citizen.html';
-          };
-        </script>
 
+        <button type="submit" id="submitBtn">Download</button>
       </form>
     </section>
 
@@ -161,10 +173,25 @@
     </div>
   </main>
 
+  <div class="corner-stats" id="cornerStats">
+    Visits: <span id="visitCount">0</span><br>
+    Downloads: <span id="submitCount">0</span>
+  </div>
+
   <canvas id="canvas" style="display:none;"></canvas>
 
   <script>
     (function () {
+      // --- Visit & Submit Counter Logic ---
+      function updateCornerStats() {
+        document.getElementById('visitCount').textContent = localStorage.getItem('bmc_visit_count') || 0;
+        document.getElementById('submitCount').textContent = localStorage.getItem('bmc_submit_count') || 0;
+      }
+      // Increment visit count on each load
+      let visits = parseInt(localStorage.getItem('bmc_visit_count') || '0', 10) + 1;
+      localStorage.setItem('bmc_visit_count', visits);
+      updateCornerStats();
+
       const form = document.getElementById('templateForm');
       const loadingOverlay = document.getElementById('loadingOverlay');
       const submitBtn = document.getElementById('submitBtn');
@@ -239,6 +266,11 @@
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        // Increment submit/download count immediately on click
+        let submits = parseInt(localStorage.getItem('bmc_submit_count') || '0', 10) + 1;
+        localStorage.setItem('bmc_submit_count', submits);
+        updateCornerStats();
 
         const selectedTemplateInput = form.querySelector('input[name="template"]:checked');
         if (!selectedTemplateInput) {
