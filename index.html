@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Bethel Malayalam Church Bday & Wedding Card Gen Page</title>
+  <title>Bethel Malayalam Church Card Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
@@ -21,18 +21,28 @@
     }
     .container {
       background: white;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 32px 40px;
       width: 100%;
-      max-width: 440px;
-      text-align: center;
+      max-width: 980px;
     }
     h1 {
-      margin-bottom: 24px;
+      margin: 0 0 10px 0;
       font-weight: 700;
-      font-size: 1.8rem;
-      color: #222;
+      font-size: 2rem;
+      color: #1d2433;
+    }
+    .subtitle {
+      margin: 0 0 24px 0;
+      color: #5b667a;
+      font-size: 16px;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 28px;
+      align-items: start;
     }
     input[type="text"] {
       width: 100%;
@@ -47,26 +57,31 @@
       outline: none;
       border-color: #3f51b5;
     }
-    .templates {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-bottom: 30px;
+    .templates-title { font-weight: 700; margin-bottom: 10px; color: #2a3344; }
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 8px;
     }
-    label {
-      cursor: pointer;
-      user-select: none;
-      font-size: 16px;
-      color: #444;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    input[type="radio"] {
-      width: 20px;
-      height: 20px;
+    .template-card {
+      position: relative;
+      border: 1px solid #e3e6ec;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafbff;
+      transition: box-shadow 0.25s ease, transform 0.12s ease, border-color 0.25s ease;
       cursor: pointer;
     }
+    .template-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
+    .template-card.selected { border-color: #3f51b5; box-shadow: 0 0 0 3px rgba(63,81,181,0.15); }
+    .template-card .thumb { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: #e9edf5; }
+    .template-card .meta { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
+    .template-card .name { font-size: 15px; color: #2a3344; font-weight: 600; }
+    .template-card .radio { width: 18px; height: 18px; }
+    .template-card input[type="radio"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    .field-label { font-size: 14px; color: #4a5363; margin: 8px 0 6px; font-weight: 600; }
     .extra-names {
       display: none;
       flex-direction: column;
@@ -74,6 +89,7 @@
     .hidden {
       display: none;
     }
+    .actions { margin-top: 8px; }
     button {
       padding: 14px 0;
       width: 100%;
@@ -113,59 +129,68 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .corner-stats {
-      position: fixed;
-      bottom: 18px;
-      right: 18px;
-      background: rgba(255,255,255,0.93);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      font-size: 14px;
-      color: #333;
-      padding: 10px 18px;
-      z-index: 10000;
-      text-align: right;
-      font-family: 'Alice', serif;
-      line-height: 1.5;
-      opacity: 0.92;
-      pointer-events: none;
-      user-select: none;
+    /* corner-stats removed */
+    @media (max-width: 900px) {
+      .content { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <main>
     <section class="container" aria-label="Personalize Image Templates">
-      <h1>BMC Card Template By Anit</h1>
-      <form id="templateForm">
-        <input
-          type="text"
-          id="userName"
-          name="userName"
-          placeholder="Enter the name"
-          required
-          maxlength="30"
-          pattern="[A-Za-z\s'-]{1,30}"
-          title="Please enter letters, spaces, apostrophes or dashes only"
-        />
-        <div class="templates">
-          <label>
-            <input type="radio" name="template" value="birthday" required />
-            Birthday Template
-          </label>
-          <label>
-            <input type="radio" name="template" value="wedding" />
-            Wedding Template
-          </label>
-        </div>
+      <h1>Bethel Malayalam Church</h1>
+      <p class="subtitle">Generate beautiful Birthday and Wedding cards with custom names.</p>
 
-        <div class="extra-names" id="extraFields">
-          <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
-          <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
-        </div>
+      <form id="templateForm" novalidate>
+        <div class="content">
+          <div>
+            <div class="templates-title">Choose a template</div>
+            <div class="template-grid" id="templateGrid">
+              <label class="template-card" aria-label="Birthday template">
+                <img class="thumb" src="Template/Birthday_Template.png" alt="Birthday preview" />
+                <div class="meta">
+                  <span class="name">Birthday</span>
+                  <input class="radio" type="radio" name="template" value="birthday" required />
+                </div>
+              </label>
 
-        <button type="submit" id="submitBtn">Download</button>
-        <button type="button" id="citizenBtn" style="margin-top:12px;">Citizen Card</button>
+              <label class="template-card" aria-label="Wedding template">
+                <img class="thumb" src="Template/Wedding_Template.png" alt="Wedding preview" />
+                <div class="meta">
+                  <span class="name">Wedding</span>
+                  <input class="radio" type="radio" name="template" value="wedding" />
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div id="singleNameFields">
+              <div class="field-label">Name</div>
+              <input
+                type="text"
+                id="userName"
+                name="userName"
+                placeholder="Enter the name (e.g., John Mathew)"
+                required
+                maxlength="30"
+                pattern="[A-Za-z\s'-]{1,30}"
+                title="Please enter letters, spaces, apostrophes or dashes only"
+              />
+            </div>
+
+            <div class="extra-names" id="extraFields">
+              <div class="field-label">Groom</div>
+              <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
+              <div class="field-label">Bride</div>
+              <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
+            </div>
+
+            <div class="actions">
+              <button type="submit" id="submitBtn">Download Card</button>
+            </div>
+          </div>
+        </div>
       </form>
     </section>
 
@@ -174,24 +199,11 @@
     </div>
   </main>
 
-  <div class="corner-stats" id="cornerStats">
-    Visits: <span id="visitCount">0</span><br>
-    Downloads: <span id="submitCount">0</span>
-  </div>
 
   <canvas id="canvas" style="display:none;"></canvas>
 
   <script>
     (function () {
-      // --- Visit & Submit Counter Logic ---
-      function updateCornerStats() {
-        document.getElementById('visitCount').textContent = localStorage.getItem('bmc_visit_count') || 0;
-        document.getElementById('submitCount').textContent = localStorage.getItem('bmc_submit_count') || 0;
-      }
-      // Increment visit count on each load
-      let visits = parseInt(localStorage.getItem('bmc_visit_count') || '0', 10) + 1;
-      localStorage.setItem('bmc_visit_count', visits);
-      updateCornerStats();
 
       const form = document.getElementById('templateForm');
       const loadingOverlay = document.getElementById('loadingOverlay');
@@ -212,8 +224,23 @@
         }
       };
 
-      document.querySelectorAll('input[name="template"]').forEach(radio => {
+      const templateRadios = document.querySelectorAll('input[name="template"]');
+      const templateCards = document.querySelectorAll('.template-card');
+
+      function updateSelectionUI(selectedValue) {
+        templateCards.forEach(card => {
+          const radio = card.querySelector('input[type="radio"]');
+          if (radio && radio.value === selectedValue) {
+            card.classList.add('selected');
+          } else {
+            card.classList.remove('selected');
+          }
+        });
+      }
+
+      templateRadios.forEach(radio => {
         radio.addEventListener('change', () => {
+          updateSelectionUI(radio.value);
           if (radio.value === 'wedding') {
             extraFields.style.display = 'flex';
             userNameInput.classList.add('hidden');
@@ -268,10 +295,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Increment submit/download count immediately on click
-        let submits = parseInt(localStorage.getItem('bmc_submit_count') || '0', 10) + 1;
-        localStorage.setItem('bmc_submit_count', submits);
-        updateCornerStats();
+        // removed submit/download counter
 
         const selectedTemplateInput = form.querySelector('input[name="template"]:checked');
         if (!selectedTemplateInput) {
@@ -334,10 +358,7 @@
         img.src = templates[selectedTemplate].url;
       });
 
-      // Citizen Card button redirect
-      document.getElementById('citizenBtn').onclick = function() {
-        window.location.href = 'citizen.html';
-      };
+      // Removed Citizen Card button and redirect
     })();
   </script>
 </body>

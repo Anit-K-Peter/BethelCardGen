@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>BMC Card Generator — Mobile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #0b0f17;
+      --card: #0f1724;
+      --text: #e5e7eb;
+      --muted: #b3b7c2;
+      --border: #1f2937;
+      --primary: #7aa7ff;
+      --primary-600: #5f8ff3;
+      --ring: rgba(122,167,255,0.35);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Alice', serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px 14px 28px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { width: 28px; height: 28px; border-radius: 6px; }
+    .brand h1 { font-size: 1.05rem; margin: 0; color: var(--text); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .section-title { font-size: 0.95rem; color: var(--muted); }
+    .input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 16px;
+      color: var(--text);
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
+    .templates { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .template {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%);
+    }
+    .template img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+    .template-name { font-size: 1rem; }
+    .radio { width: 18px; height: 18px; accent-color: var(--primary); }
+    .extra-names { display: none; flex-direction: column; gap: 10px; }
+    .cta { width: 100%; padding: 14px 0; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%); color: #fff; font-weight: 700; font-size: 18px; }
+    .preview { border: 1px dashed var(--border); border-radius: 12px; padding: 8px; display: grid; place-items: center; min-height: 240px; }
+    canvas { width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <img src="Template/logo.png" alt="BMC" onerror="this.style.display='none'">
+        <h1>BMC Card Generator</h1>
+      </div>
+      <a href="index.html" style="color:var(--muted); text-decoration:none; font-size:0.95rem">Desktop</a>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Enter name(s)</div>
+      <input class="input" type="text" id="userName" placeholder="Enter the name" maxlength="30" pattern="[A-Za-z\s'-]{1,30}">
+      <div class="extra-names" id="extraFields">
+        <input class="input" type="text" id="husbandName" placeholder="Name of Mr" maxlength="30">
+        <input class="input" type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Choose a template</div>
+      <div class="templates">
+        <label class="template">
+          <img src="Template/Birthday_Template.png" alt="Birthday">
+          <span class="template-name">Birthday</span>
+          <input class="radio" type="radio" name="template" value="birthday" required>
+        </label>
+        <label class="template">
+          <img src="Template/Wedding_Template.png" alt="Wedding">
+          <span class="template-name">Wedding</span>
+          <input class="radio" type="radio" name="template" value="wedding">
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Preview</div>
+      <div class="preview"><canvas id="canvas"></canvas></div>
+    </div>
+
+    <form class="card" id="templateForm">
+      <button class="cta" id="submitBtn" type="submit">Download</button>
+    </form>
+  </div>
+
+  <script>
+    (function(){
+      // keep parity with desktop logic
+      const form = document.getElementById('templateForm');
+      const userNameInput = document.getElementById('userName');
+      const extraFields = document.getElementById('extraFields');
+      const husbandNameInput = document.getElementById('husbandName');
+      const wifeNameInput = document.getElementById('wifeName');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const templates = {
+        birthday: { url: 'Template/Birthday_Template.png' },
+        wedding: { url: 'Template/Wedding_Template.png' }
+      };
+
+      const imageCache = {};
+      function sanitizeFileName(s){ return (s||'').trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase(); }
+
+      function drawTextOnImage(image, options){
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(image,0,0);
+        ctx.fillStyle = 'black';
+        ctx.font = 'bold 50px Alice';
+        ctx.textBaseline = 'top';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 4;
+        if (options.template === 'birthday') {
+          ctx.fillText(options.name, 400, 851.6);
+        } else {
+          ctx.fillText(options.husband, 353.9, 765.1);
+          ctx.fillText(options.wife, 353.9, 898.3);
+        }
+      }
+
+      function loadImage(key){
+        return new Promise(function(resolve,reject){
+          if(imageCache[key]) return resolve(imageCache[key]);
+          const img = new Image();
+          img.onload = function(){ imageCache[key]=img; resolve(img); };
+          img.onerror = function(){ reject(new Error('img load failed')); };
+          img.src = templates[key].url;
+        });
+      }
+
+      function updateFormFieldsVisibility(val){
+        if (val === 'wedding') {
+          extraFields.style.display = 'flex';
+          userNameInput.classList.add('hidden');
+          userNameInput.required = false;
+          husbandNameInput.required = true;
+          wifeNameInput.required = true;
+        } else {
+          extraFields.style.display = 'none';
+          userNameInput.classList.remove('hidden');
+          userNameInput.required = true;
+          husbandNameInput.required = false;
+          wifeNameInput.required = false;
+        }
+      }
+
+      async function renderPreview(){
+        const selected = form.querySelector('input[name="template"]:checked');
+        if(!selected){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+        updateFormFieldsVisibility(selected.value);
+        const img = await loadImage(selected.value);
+        const options = { template: selected.value };
+        if (selected.value === 'birthday') { options.name = userNameInput.value.trim() || 'Name'; }
+        else { options.husband = husbandNameInput.value.trim() || 'Mr'; options.wife = wifeNameInput.value.trim() || 'Mrs'; }
+        drawTextOnImage(img, options);
+      }
+
+      document.querySelectorAll('input[name="template"]').forEach(r=>{
+        r.addEventListener('change', renderPreview);
+      });
+      userNameInput.addEventListener('input', renderPreview);
+      husbandNameInput.addEventListener('input', renderPreview);
+      wifeNameInput.addEventListener('input', renderPreview);
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const selected = form.querySelector('input[name="template"]:checked');
+        if(!selected){ alert('Please select a template.'); return; }
+        const t = selected.value;
+        const options = { template: t };
+        if (t === 'birthday') {
+          const name = userNameInput.value.trim();
+          if (!name) { alert('Please enter your name.'); return; }
+          options.name = name;
+        } else {
+          const h = husbandNameInput.value.trim();
+          const w = wifeNameInput.value.trim();
+          if (!h || !w) { alert('Please enter both names.'); return; }
+          options.husband = h; options.wife = w;
+        }
+        loadImage(t).then(function(img){
+          drawTextOnImage(img, options);
+          const base = t === 'birthday' ? sanitizeFileName(options.name) : sanitizeFileName(options.husband + '_' + options.wife);
+          const dateStr = new Date().toISOString().split('T')[0];
+          const file = `${t}_${base}_${dateStr}.png`;
+          const dataURL = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = dataURL; link.download = file; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+          alert('Your personalized template is ready for download!');
+        }).catch(function(){ alert('Failed to load the selected template image.'); });
+      });
+
+      // Initial preview if restored state
+      renderPreview();
+    })();
+  </script>
+</body>
+</html>
+
