@@ -6,134 +6,19 @@
   <title>Bethel Malayalam Church Card Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; }
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Alice', serif;
-      background: #f0f2f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      padding: 32px 40px;
-      width: 100%;
-      max-width: 980px;
-    }
-    h1 {
-      margin: 0 0 10px 0;
-      font-weight: 700;
-      font-size: 2rem;
-      color: #1d2433;
-    }
-    .subtitle {
-      margin: 0 0 24px 0;
-      color: #5b667a;
-      font-size: 16px;
-    }
-    .content {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 28px;
-      align-items: start;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1.5px solid #ccc;
-      margin-bottom: 20px;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #3f51b5;
-    }
-    .templates-title { font-weight: 700; margin-bottom: 10px; color: #2a3344; }
-    .template-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 8px;
-    }
-    .template-card {
-      position: relative;
-      border: 1px solid #e3e6ec;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #fafbff;
-      transition: box-shadow 0.25s ease, transform 0.12s ease, border-color 0.25s ease;
-      cursor: pointer;
-    }
-    .template-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
-    .template-card.selected { border-color: #3f51b5; box-shadow: 0 0 0 3px rgba(63,81,181,0.15); }
-    .template-card .thumb { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: #e9edf5; }
-    .template-card .meta { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
-    .template-card .name { font-size: 15px; color: #2a3344; font-weight: 600; }
-    .template-card .radio { width: 18px; height: 18px; }
-    .template-card input[type="radio"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-
-    .field-label { font-size: 14px; color: #4a5363; margin: 8px 0 6px; font-weight: 600; }
-    .extra-names {
-      display: none;
-      flex-direction: column;
-    }
-    .hidden {
-      display: none;
-    }
-    .actions { margin-top: 8px; }
-    button {
-      padding: 14px 0;
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
-      color: white;
-      font-weight: 700;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover:not(:disabled) {
-      background: linear-gradient(135deg, #3a78d1 0%, #2c5ea5 100%);
-    }
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-    #loadingOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.9);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .spinner {
-      border: 6px solid #ececec;
-      border-top: 6px solid #4a90e2;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    /* corner-stats removed */
-    @media (max-width: 900px) {
-      .content { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Montserrat:wght@600&family=Poppins:wght@600&family=Playfair+Display:wght@700&family=Great+Vibes&family=Merriweather:wght@700&family=Roboto+Slab:wght@700&family=Lobster&family=Dancing+Script:wght@700&family=Cinzel:wght@700&family=Raleway:wght@700&family=Oswald:wght@700&family=Nunito:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function(){
+      try {
+        var isSmall = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+        var onMobilePage = /mobile\.html$/i.test(window.location.pathname);
+        if (isSmall && !onMobilePage) {
+          window.location.replace('mobile.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <main>
@@ -142,8 +27,14 @@
       <p class="subtitle">Generate beautiful Birthday and Wedding cards with custom names.</p>
 
       <form id="templateForm" novalidate>
+        <div class="mobile-stepper" id="mobileStepper" style="display:none;">
+          <div class="step active" id="stepEdit"><span class="dot"></span> Edit</div>
+          <div class="step" id="stepPreview"><span class="dot"></span> Preview</div>
+          <div class="step" id="stepDownload"><span class="dot"></span> Download</div>
+        </div>
+
         <div class="content">
-          <div>
+          <div id="leftPane">
             <div class="templates-title">Choose a template</div>
             <div class="template-grid" id="templateGrid">
               <label class="template-card" aria-label="Birthday template">
@@ -162,32 +53,68 @@
                 </div>
               </label>
             </div>
-          </div>
 
-          <div>
+            <div class="field-group">
+              <div class="field-label">Font</div>
+              <select id="fontSelect" style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #ccc; margin-bottom: 10px;">
+                <option value="Alice" selected>Alice (default)</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Great Vibes">Great Vibes (script)</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Roboto Slab">Roboto Slab</option>
+                <option value="Lobster">Lobster (script)</option>
+                <option value="Dancing Script">Dancing Script</option>
+                <option value="Cinzel">Cinzel</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Oswald">Oswald</option>
+                <option value="Nunito">Nunito</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Size</div>
+              <input type="range" id="fontSizeRange" min="28" max="70" value="50" step="1" style="width:100%;" />
+            </div>
+
             <div id="singleNameFields">
               <div class="field-label">Name</div>
-              <input
-                type="text"
-                id="userName"
-                name="userName"
+        <input
+          type="text"
+          id="userName"
+          name="userName"
                 placeholder="Enter the name (e.g., John Mathew)"
-                required
-                maxlength="30"
-                pattern="[A-Za-z\s'-]{1,30}"
-                title="Please enter letters, spaces, apostrophes or dashes only"
-              />
-            </div>
+          required
+          maxlength="30"
+          pattern="[A-Za-z\s'-]{1,30}"
+          title="Please enter letters, spaces, apostrophes or dashes only"
+        />
+        </div>
 
-            <div class="extra-names" id="extraFields">
+        <div class="extra-names" id="extraFields">
               <div class="field-label">Groom</div>
-              <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
+          <input type="text" id="husbandName" placeholder="Name of Mr" maxlength="30" />
               <div class="field-label">Bride</div>
-              <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
-            </div>
+          <input type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30" />
+        </div>
 
             <div class="actions">
               <button type="submit" id="submitBtn">Download Card</button>
+            </div>
+          </div>
+
+          <div id="rightPane">
+            <div class="preview-card" aria-live="polite" aria-label="Live preview">
+              <div class="preview-header">Live Preview</div>
+              <div class="preview-body">
+                <img id="previewImg" class="preview-img" alt="Template preview" />
+              </div>
+            </div>
+            <div class="mobile-actions" id="mobileActions" style="display:none;">
+              <button type="button" class="ghost" id="backBtn">Back</button>
+              <button type="button" class="primary" id="nextBtn">Next</button>
+              <button type="button" class="primary" id="downloadBtn" style="display:none;">Download</button>
             </div>
           </div>
         </div>
@@ -202,164 +129,6 @@
 
   <canvas id="canvas" style="display:none;"></canvas>
 
-  <script>
-    (function () {
-
-      const form = document.getElementById('templateForm');
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const submitBtn = document.getElementById('submitBtn');
-      const userNameInput = document.getElementById('userName');
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
-      const extraFields = document.getElementById('extraFields');
-      const husbandNameInput = document.getElementById('husbandName');
-      const wifeNameInput = document.getElementById('wifeName');
-
-      const templates = {
-        birthday: {
-          url: 'Template/Birthday_Template.png',
-        },
-        wedding: {
-          url: 'Template/Wedding_Template.png',
-        }
-      };
-
-      const templateRadios = document.querySelectorAll('input[name="template"]');
-      const templateCards = document.querySelectorAll('.template-card');
-
-      function updateSelectionUI(selectedValue) {
-        templateCards.forEach(card => {
-          const radio = card.querySelector('input[type="radio"]');
-          if (radio && radio.value === selectedValue) {
-            card.classList.add('selected');
-          } else {
-            card.classList.remove('selected');
-          }
-        });
-      }
-
-      templateRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-          updateSelectionUI(radio.value);
-          if (radio.value === 'wedding') {
-            extraFields.style.display = 'flex';
-            userNameInput.classList.add('hidden');
-            userNameInput.required = false;
-            husbandNameInput.required = true;
-            wifeNameInput.required = true;
-          } else {
-            extraFields.style.display = 'none';
-            userNameInput.classList.remove('hidden');
-            userNameInput.required = true;
-            husbandNameInput.required = false;
-            wifeNameInput.required = false;
-          }
-        });
-      });
-
-      function sanitizeFileName(s) {
-        return s.trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-      }
-
-      function drawTextOnImage(image, options) {
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0);
-
-        ctx.fillStyle = 'black';
-        ctx.font = 'bold 50px Alice';
-        ctx.textBaseline = 'top';
-        ctx.shadowColor = 'rgba(0,0,0,0.4)';
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 4;
-
-        if (options.template === 'birthday') {
-          ctx.fillText(options.name, 400, 851.6);
-        } else if (options.template === 'wedding') {
-          ctx.fillText(options.husband, 353.9, 765.1);
-          ctx.fillText(options.wife, 353.9, 898.3);
-        }
-      }
-
-      function downloadImage(dataURL, filename) {
-        const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // removed submit/download counter
-
-        const selectedTemplateInput = form.querySelector('input[name="template"]:checked');
-        if (!selectedTemplateInput) {
-          alert('Please select a template.');
-          return;
-        }
-
-        const selectedTemplate = selectedTemplateInput.value;
-        let imageTextOptions = { template: selectedTemplate };
-
-        if (selectedTemplate === 'birthday') {
-          const userName = userNameInput.value.trim();
-          if (!userName) {
-            alert('Please enter your name.');
-            return;
-          }
-          imageTextOptions.name = userName;
-        } else {
-          const husband = husbandNameInput.value.trim();
-          const wife = wifeNameInput.value.trim();
-          if (!husband || !wife) {
-            alert('Please enter both names.');
-            return;
-          }
-          imageTextOptions.husband = husband;
-          imageTextOptions.wife = wife;
-        }
-
-        submitBtn.disabled = true;
-        loadingOverlay.style.display = 'flex';
-
-        const img = new Image();
-        img.onload = function () {
-          setTimeout(() => {
-            try {
-              drawTextOnImage(img, imageTextOptions);
-              const baseName = selectedTemplate === 'birthday'
-                ? sanitizeFileName(imageTextOptions.name)
-                : sanitizeFileName(imageTextOptions.husband + '_' + imageTextOptions.wife);
-              const dateStr = new Date().toISOString().split('T')[0];
-              const filename = `${selectedTemplate}_${baseName}_${dateStr}.png`;
-              const dataURL = canvas.toDataURL('image/png');
-              downloadImage(dataURL, filename);
-              alert('Your personalized template is ready for download!');
-            } catch (err) {
-              alert('Error generating image: ' + err.message);
-            } finally {
-              loadingOverlay.style.display = 'none';
-              submitBtn.disabled = false;
-            }
-          }, 1000);
-        };
-
-        img.onerror = function () {
-          alert('Failed to load the selected template image.');
-          loadingOverlay.style.display = 'none';
-          submitBtn.disabled = false;
-        };
-
-        img.src = templates[selectedTemplate].url;
-      });
-
-      // Removed Citizen Card button and redirect
-    })();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

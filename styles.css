@@ -1,0 +1,194 @@
+* { box-sizing: border-box; }
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Alice', serif;
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 20px 24px;
+  width: 100%;
+  max-width: 900px; /* compact for 1080p */
+}
+h1 {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #1d2433;
+}
+.subtitle {
+  margin: 0 0 16px 0;
+  color: #5b667a;
+  font-size: 14px;
+}
+.content {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr; /* tighter */
+  gap: 18px;
+  align-items: start;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  margin-bottom: 14px;
+  transition: border-color 0.3s ease;
+}
+input[type="text"]:focus {
+  outline: none;
+  border-color: #3f51b5;
+}
+.templates-title { font-weight: 700; margin-bottom: 8px; color: #2a3344; }
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.template-card {
+  position: relative;
+  border: 1px solid #e3e6ec;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fafbff;
+  transition: box-shadow 0.25s ease, transform 0.12s ease, border-color 0.25s ease;
+  cursor: pointer;
+}
+.template-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
+.template-card.selected { border-color: #3f51b5; box-shadow: 0 0 0 3px rgba(63,81,181,0.15); }
+.template-card .thumb { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: #e9edf5; }
+.template-card .meta { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; }
+.template-card .name { font-size: 14px; color: #2a3344; font-weight: 600; }
+.template-card .radio { width: 18px; height: 18px; }
+.template-card input[type="radio"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.field-label { font-size: 13px; color: #4a5363; margin: 6px 0 6px; font-weight: 600; }
+.extra-names {
+  display: none;
+  flex-direction: column;
+}
+.hidden { display: none; }
+.actions { margin-top: 6px; }
+button {
+  padding: 12px 0;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+button:hover:not(:disabled) { background: linear-gradient(135deg, #3a78d1 0%, #2c5ea5 100%); }
+button:disabled { background: #999; cursor: not-allowed; }
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.spinner {
+  border: 6px solid #ececec;
+  border-top: 6px solid #4a90e2;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* corner-stats removed */
+/* Preview card */
+.preview-card {
+  border: 1px solid #e3e6ec;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fafbff;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.preview-header {
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #2a3344;
+  border-bottom: 1px solid #e9edf5;
+  background: #ffffff;
+}
+.preview-body { padding: 8px; background: #f5f7fb; }
+.preview-img {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  background: #e9edf5;
+}
+@media (max-width: 900px) {
+  .content { grid-template-columns: 1fr; }
+  .container { max-width: 100%; padding: 14px; border-radius: 12px; }
+  h1 { font-size: 1.35rem; }
+  .subtitle { font-size: 13px; margin-bottom: 10px; }
+  .template-grid { grid-template-columns: 1fr; gap: 10px; }
+  .preview-body { padding: 6px; }
+  .preview-img { width: 100%; height: auto; }
+  input[type="text"] { font-size: 16px; padding: 12px 14px; }
+  select { font-size: 16px; }
+  #fontSizeRange { height: 34px; }
+  button { font-size: 16px; padding: 14px 0; }
+  /* New mobile stepper */
+  .mobile-stepper { display: flex; gap: 8px; margin: 6px 0 12px; }
+  .mobile-stepper .step {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 10px 8px; border-radius: 10px; border: 1px solid #d6d9e0; background: #fff; color: #2a3344;
+  }
+  .mobile-stepper .step .dot { width: 8px; height: 8px; border-radius: 50%; background: #c8cede; }
+  .mobile-stepper .step.active { background: #eaf0ff; border-color: #b6c4ff; color: #2b3ea3; font-weight: 700; }
+  .mobile-stepper .step.active .dot { background: #2b3ea3; }
+  .pane-hidden { display: none !important; }
+
+  /* Sticky mobile actions */
+  .mobile-actions { position: sticky; bottom: 8px; display: flex; gap: 8px; margin-top: 10px; z-index: 20; }
+  .mobile-actions .ghost { flex: 1; padding: 12px 0; border-radius: 10px; border: 1px solid #cfd3df; background: #fff; color: #2a3344; }
+  .mobile-actions .primary { flex: 2; padding: 12px 0; border-radius: 10px; border: none; background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%); color: #fff; font-weight: 700; }
+
+  /* Fullscreen preview mode for mobile: image covers the viewport */
+  body.mobile-cover, html.mobile-cover { height: 100%; }
+  .mobile-cover main { height: 100%; }
+  .mobile-cover .container { padding: 0; border-radius: 0; max-width: 100%; height: 100%; }
+  .mobile-cover .content { display: block; height: 100%; }
+  .mobile-cover #leftPane { display: none !important; }
+  .mobile-cover #rightPane { height: 100%; }
+  .mobile-cover .preview-card { border: none; border-radius: 0; height: 100%; box-shadow: none; }
+  .mobile-cover .preview-header { display: none; }
+  .mobile-cover .preview-body { padding: 0; height: 100%; }
+  .mobile-cover .preview-body::after { content: ""; display: block; height: env(safe-area-inset-bottom); }
+  .mobile-cover .preview-img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    border-radius: 0;
+    background: #000;
+  }
+  .mobile-cover .mobile-actions { position: fixed; left: 0; right: 0; bottom: calc(8px + env(safe-area-inset-bottom)); padding: 0 10px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 10px; }
+  h1 { font-size: 1.25rem; }
+  .subtitle { font-size: 12px; }
+  .templates-title { margin-bottom: 6px; }
+}
+

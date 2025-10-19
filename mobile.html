@@ -3,245 +3,632 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>BMC Card Generator — Mobile</title>
+  <title>Bethel Malayalam Church - Card Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Alice&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    :root {
-      --bg: #0b0f17;
-      --card: #0f1724;
-      --text: #e5e7eb;
-      --muted: #b3b7c2;
-      --border: #1f2937;
-      --primary: #7aa7ff;
-      --primary-600: #5f8ff3;
-      --ring: rgba(122,167,255,0.35);
-    }
-    html, body {
+    * { 
+      box-sizing: border-box; 
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: 'Alice', serif;
-      background: var(--bg);
-      color: var(--text);
     }
-    .wrap {
+    
+    body, html {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      overflow-x: hidden;
+    }
+    
+    .app-container {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding: 18px 14px 28px;
+      position: relative;
     }
+    
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      background: white;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
     }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand img { width: 28px; height: 28px; border-radius: 6px; }
-    .brand h1 { font-size: 1.05rem; margin: 0; color: var(--text); }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 4px;
     }
-    .section-title { font-size: 0.95rem; color: var(--muted); }
-    .input {
+    
+    .header p {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 400;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
       width: 100%;
-      padding: 12px 14px;
-      font-size: 16px;
-      color: var(--text);
-      border-radius: 10px;
-      border: 1.5px solid var(--border);
-      background: transparent;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
-    .templates { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .template {
+    
+    .card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    
+    .template-grid {
       display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 10px;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%);
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
     }
-    .template img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
-    .template-name { font-size: 1rem; }
-    .radio { width: 18px; height: 18px; accent-color: var(--primary); }
-    .extra-names { display: none; flex-direction: column; gap: 10px; }
-    .cta { width: 100%; padding: 14px 0; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%); color: #fff; font-weight: 700; font-size: 18px; }
-    .preview { border: 1px dashed var(--border); border-radius: 12px; padding: 8px; display: grid; place-items: center; min-height: 240px; }
-    canvas { width: 100%; height: auto; display: block; }
+    
+    .template-card {
+      position: relative;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+      text-align: center;
+    }
+    
+    .template-card:hover {
+      border-color: #999;
+    }
+    
+    .template-card.selected {
+      border-color: #333;
+      background: #f0f0f0;
+    }
+    
+    .template-preview {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .template-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4a5568;
+    }
+    
+    .template-radio {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      accent-color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4a5568;
+      margin-bottom: 8px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+      background: white;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #333;
+      background: white;
+    }
+    
+    .form-input::placeholder {
+      color: #a0aec0;
+    }
+    
+    .extra-names {
+      display: none;
+      gap: 16px;
+    }
+    
+    .extra-names.show {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .preview-section {
+      margin-bottom: 24px;
+    }
+    
+    .preview-container {
+      background: #fafafa;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .preview-placeholder {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+    
+    .action-button {
+      width: 100%;
+      padding: 16px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .action-button:hover:not(:disabled) {
+      background: #555;
+    }
+    
+    .action-button:active {
+      background: #222;
+    }
+    
+    .action-button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #333;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 16px;
+      font-size: 1rem;
+      color: #4a5568;
+      font-weight: 500;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      background: #4caf50;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+      display: none;
+    }
+    
+    .error-message {
+      background: #f44336;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+      display: none;
+    }
+    
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 16px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .template-grid {
+        gap: 8px;
+      }
+      
+      .template-card {
+        padding: 12px;
+      }
+      
+      .extra-names.show {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <div class="brand">
-        <img src="Template/logo.png" alt="BMC" onerror="this.style.display='none'">
-        <h1>BMC Card Generator</h1>
+  <div class="app-container">
+    <header class="header">
+      <h1>Bethel Malayalam Church</h1>
+      <p>Create beautiful personalized cards</p>
+    </header>
+    
+    <main class="main-content">
+      <div class="success-message" id="successMessage">
+        ✓ Your card is ready for download!
       </div>
-      <a href="index.html" style="color:var(--muted); text-decoration:none; font-size:0.95rem">Desktop</a>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Enter name(s)</div>
-      <input class="input" type="text" id="userName" placeholder="Enter the name" maxlength="30" pattern="[A-Za-z\s'-]{1,30}">
-      <div class="extra-names" id="extraFields">
-        <input class="input" type="text" id="husbandName" placeholder="Name of Mr" maxlength="30">
-        <input class="input" type="text" id="wifeName" placeholder="Name of Mrs" maxlength="30">
+      
+      <div class="error-message" id="errorMessage">
+        ⚠ Please check your inputs and try again.
+      </div>
+      
+      <form id="templateForm">
+        <div class="card">
+          <div class="section-title">Choose Template</div>
+          <div class="template-grid">
+            <label class="template-card" for="birthday-template">
+              <img src="Template/Birthday_Template.png" alt="Birthday Template" class="template-preview" />
+              <div class="template-name">Birthday</div>
+              <input type="radio" name="template" value="birthday" id="birthday-template" class="template-radio" required />
+            </label>
+            
+            <label class="template-card" for="wedding-template">
+              <img src="Template/Wedding_Template.png" alt="Wedding Template" class="template-preview" />
+              <div class="template-name">Wedding</div>
+              <input type="radio" name="template" value="wedding" id="wedding-template" class="template-radio" />
+            </label>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="section-title">Enter Details</div>
+          
+          <div class="form-group" id="singleNameGroup">
+            <label class="form-label" for="userName">Name</label>
+            <input 
+              type="text" 
+              id="userName" 
+              name="userName"
+              class="form-input"
+              placeholder="Enter the name"
+              required
+              maxlength="30"
+              pattern="[A-Za-z\s'-]{1,30}"
+              title="Please enter letters, spaces, apostrophes or dashes only"
+            />
+          </div>
+          
+          <div class="extra-names" id="extraFields">
+            <div class="form-group">
+              <label class="form-label" for="husbandName">Groom's Name</label>
+              <input 
+                type="text" 
+                id="husbandName" 
+                class="form-input"
+                placeholder="Enter groom's name" 
+                maxlength="30" 
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="wifeName">Bride's Name</label>
+              <input 
+                type="text" 
+                id="wifeName" 
+                class="form-input"
+                placeholder="Enter bride's name" 
+                maxlength="30" 
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div class="card preview-section">
+          <div class="section-title">Live Preview</div>
+          <div class="preview-container">
+            <div class="preview-placeholder" id="previewPlaceholder">
+              Select a template and enter names to see preview
+            </div>
+            <img id="previewImage" class="preview-image hidden" alt="Card preview" />
+          </div>
+        </div>
+        
+        <button type="submit" class="action-button" id="submitBtn">
+          <span id="buttonText">Generate & Download Card</span>
+        </button>
+      </form>
+    </main>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+      <div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generating your card...</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="section-title">Choose a template</div>
-      <div class="templates">
-        <label class="template">
-          <img src="Template/Birthday_Template.png" alt="Birthday">
-          <span class="template-name">Birthday</span>
-          <input class="radio" type="radio" name="template" value="birthday" required>
-        </label>
-        <label class="template">
-          <img src="Template/Wedding_Template.png" alt="Wedding">
-          <span class="template-name">Wedding</span>
-          <input class="radio" type="radio" name="template" value="wedding">
-        </label>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Preview</div>
-      <div class="preview"><canvas id="canvas"></canvas></div>
-    </div>
-
-    <form class="card" id="templateForm">
-      <button class="cta" id="submitBtn" type="submit">Download</button>
-    </form>
   </div>
-
+  
+  <canvas id="canvas" style="display:none;"></canvas>
+  
   <script>
-    (function(){
-      // keep parity with desktop logic
+    (function () {
       const form = document.getElementById('templateForm');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const submitBtn = document.getElementById('submitBtn');
+      const buttonText = document.getElementById('buttonText');
       const userNameInput = document.getElementById('userName');
-      const extraFields = document.getElementById('extraFields');
-      const husbandNameInput = document.getElementById('husbandName');
-      const wifeNameInput = document.getElementById('wifeName');
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
-
+      const extraFields = document.getElementById('extraFields');
+      const singleNameGroup = document.getElementById('singleNameGroup');
+      const husbandNameInput = document.getElementById('husbandName');
+      const wifeNameInput = document.getElementById('wifeName');
+      const previewImage = document.getElementById('previewImage');
+      const previewPlaceholder = document.getElementById('previewPlaceholder');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      
       const templates = {
-        birthday: { url: 'Template/Birthday_Template.png' },
-        wedding: { url: 'Template/Wedding_Template.png' }
+        birthday: {
+          url: 'Template/Birthday_Template.png',
+        },
+        wedding: {
+          url: 'Template/Wedding_Template.png',
+        }
       };
-
-      const imageCache = {};
-      function sanitizeFileName(s){ return (s||'').trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase(); }
-
-      function drawTextOnImage(image, options){
+      
+      // Template selection handling
+      document.querySelectorAll('input[name="template"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          // Update visual selection
+          document.querySelectorAll('.template-card').forEach(card => {
+            card.classList.remove('selected');
+          });
+          radio.closest('.template-card').classList.add('selected');
+          
+          // Show/hide appropriate fields
+          if (radio.value === 'wedding') {
+            extraFields.classList.add('show');
+            singleNameGroup.classList.add('hidden');
+            userNameInput.required = false;
+            husbandNameInput.required = true;
+            wifeNameInput.required = true;
+          } else {
+            extraFields.classList.remove('show');
+            singleNameGroup.classList.remove('hidden');
+            userNameInput.required = true;
+            husbandNameInput.required = false;
+            wifeNameInput.required = false;
+          }
+          
+          updatePreview();
+        });
+      });
+      
+      // Live preview functionality
+      function updatePreview() {
+        const selectedTemplate = document.querySelector('input[name="template"]:checked');
+        if (!selectedTemplate) {
+          previewImage.classList.add('hidden');
+          previewPlaceholder.classList.remove('hidden');
+          return;
+        }
+        
+        const img = new Image();
+        img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          
+          ctx.fillStyle = 'black';
+          ctx.font = 'bold 50px Alice';
+          ctx.textBaseline = 'top';
+          ctx.shadowColor = 'rgba(0,0,0,0.4)';
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          ctx.shadowBlur = 4;
+          
+          if (selectedTemplate.value === 'birthday') {
+            const name = userNameInput.value.trim();
+            if (name) {
+              ctx.fillText(name, 400, 851.6);
+            }
+          } else if (selectedTemplate.value === 'wedding') {
+            const husband = husbandNameInput.value.trim();
+            const wife = wifeNameInput.value.trim();
+            if (husband) {
+              ctx.fillText(husband, 353.9, 765.1);
+            }
+            if (wife) {
+              ctx.fillText(wife, 353.9, 898.3);
+            }
+          }
+          
+          // Convert canvas to image for preview
+          const dataURL = canvas.toDataURL('image/png');
+          previewImage.src = dataURL;
+          previewImage.classList.remove('hidden');
+          previewPlaceholder.classList.add('hidden');
+        };
+        
+        img.src = templates[selectedTemplate.value].url;
+      }
+      
+      // Add event listeners for live preview
+      userNameInput.addEventListener('input', updatePreview);
+      husbandNameInput.addEventListener('input', updatePreview);
+      wifeNameInput.addEventListener('input', updatePreview);
+      
+      function showMessage(messageElement, hideAfter = 3000) {
+        messageElement.style.display = 'block';
+        setTimeout(() => {
+          messageElement.style.display = 'none';
+        }, hideAfter);
+      }
+      
+      function sanitizeFileName(s) {
+        return s.trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+      }
+      
+      function drawTextOnImage(image, options) {
         canvas.width = image.width;
         canvas.height = image.height;
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(image,0,0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0);
+        
         ctx.fillStyle = 'black';
         ctx.font = 'bold 50px Alice';
         ctx.textBaseline = 'top';
         ctx.shadowColor = 'rgba(0,0,0,0.4)';
-        ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 4;
+        
         if (options.template === 'birthday') {
           ctx.fillText(options.name, 400, 851.6);
-        } else {
+        } else if (options.template === 'wedding') {
           ctx.fillText(options.husband, 353.9, 765.1);
           ctx.fillText(options.wife, 353.9, 898.3);
         }
       }
-
-      function loadImage(key){
-        return new Promise(function(resolve,reject){
-          if(imageCache[key]) return resolve(imageCache[key]);
-          const img = new Image();
-          img.onload = function(){ imageCache[key]=img; resolve(img); };
-          img.onerror = function(){ reject(new Error('img load failed')); };
-          img.src = templates[key].url;
-        });
+      
+      function downloadImage(dataURL, filename) {
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
-
-      function updateFormFieldsVisibility(val){
-        if (val === 'wedding') {
-          extraFields.style.display = 'flex';
-          userNameInput.classList.add('hidden');
-          userNameInput.required = false;
-          husbandNameInput.required = true;
-          wifeNameInput.required = true;
-        } else {
-          extraFields.style.display = 'none';
-          userNameInput.classList.remove('hidden');
-          userNameInput.required = true;
-          husbandNameInput.required = false;
-          wifeNameInput.required = false;
-        }
-      }
-
-      async function renderPreview(){
-        const selected = form.querySelector('input[name="template"]:checked');
-        if(!selected){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
-        updateFormFieldsVisibility(selected.value);
-        const img = await loadImage(selected.value);
-        const options = { template: selected.value };
-        if (selected.value === 'birthday') { options.name = userNameInput.value.trim() || 'Name'; }
-        else { options.husband = husbandNameInput.value.trim() || 'Mr'; options.wife = wifeNameInput.value.trim() || 'Mrs'; }
-        drawTextOnImage(img, options);
-      }
-
-      document.querySelectorAll('input[name="template"]').forEach(r=>{
-        r.addEventListener('change', renderPreview);
-      });
-      userNameInput.addEventListener('input', renderPreview);
-      husbandNameInput.addEventListener('input', renderPreview);
-      wifeNameInput.addEventListener('input', renderPreview);
-
-      form.addEventListener('submit', function(e){
+      
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
-        const selected = form.querySelector('input[name="template"]:checked');
-        if(!selected){ alert('Please select a template.'); return; }
-        const t = selected.value;
-        const options = { template: t };
-        if (t === 'birthday') {
-          const name = userNameInput.value.trim();
-          if (!name) { alert('Please enter your name.'); return; }
-          options.name = name;
-        } else {
-          const h = husbandNameInput.value.trim();
-          const w = wifeNameInput.value.trim();
-          if (!h || !w) { alert('Please enter both names.'); return; }
-          options.husband = h; options.wife = w;
+        
+        const selectedTemplateInput = form.querySelector('input[name="template"]:checked');
+        if (!selectedTemplateInput) {
+          showMessage(errorMessage);
+          return;
         }
-        loadImage(t).then(function(img){
-          drawTextOnImage(img, options);
-          const base = t === 'birthday' ? sanitizeFileName(options.name) : sanitizeFileName(options.husband + '_' + options.wife);
-          const dateStr = new Date().toISOString().split('T')[0];
-          const file = `${t}_${base}_${dateStr}.png`;
-          const dataURL = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.href = dataURL; link.download = file; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-          alert('Your personalized template is ready for download!');
-        }).catch(function(){ alert('Failed to load the selected template image.'); });
+        
+        const selectedTemplate = selectedTemplateInput.value;
+        let imageTextOptions = { template: selectedTemplate };
+        
+        if (selectedTemplate === 'birthday') {
+          const userName = userNameInput.value.trim();
+          if (!userName) {
+            showMessage(errorMessage);
+            return;
+          }
+          imageTextOptions.name = userName;
+        } else {
+          const husband = husbandNameInput.value.trim();
+          const wife = wifeNameInput.value.trim();
+          if (!husband || !wife) {
+            showMessage(errorMessage);
+            return;
+          }
+          imageTextOptions.husband = husband;
+          imageTextOptions.wife = wife;
+        }
+        
+        submitBtn.disabled = true;
+        buttonText.textContent = 'Generating...';
+        loadingOverlay.style.display = 'flex';
+        
+        const img = new Image();
+        img.onload = function () {
+          setTimeout(() => {
+            try {
+              drawTextOnImage(img, imageTextOptions);
+              const baseName = selectedTemplate === 'birthday'
+                ? sanitizeFileName(imageTextOptions.name)
+                : sanitizeFileName(imageTextOptions.husband + '_' + imageTextOptions.wife);
+              const dateStr = new Date().toISOString().split('T')[0];
+              const filename = `${selectedTemplate}_${baseName}_${dateStr}.png`;
+              const dataURL = canvas.toDataURL('image/png');
+              downloadImage(dataURL, filename);
+              showMessage(successMessage);
+            } catch (err) {
+              showMessage(errorMessage);
+            } finally {
+              loadingOverlay.style.display = 'none';
+              submitBtn.disabled = false;
+              buttonText.textContent = 'Generate & Download Card';
+            }
+          }, 1500);
+        };
+        
+        img.onerror = function () {
+          showMessage(errorMessage);
+          loadingOverlay.style.display = 'none';
+          submitBtn.disabled = false;
+          buttonText.textContent = 'Generate & Download Card';
+        };
+        
+        img.src = templates[selectedTemplate].url;
       });
-
-      // Initial preview if restored state
-      renderPreview();
     })();
   </script>
 </body>
 </html>
-
